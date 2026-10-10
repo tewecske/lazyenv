@@ -36,6 +36,7 @@ const (
 	ModeConfirmMatrixDelete
 	ModeReorderMenu
 	ModeReorderConfirm
+	ModeDescription
 )
 
 // Focus represents which panel has focus.
@@ -100,6 +101,10 @@ type App struct {
 
 	// Reorder state: the mode chosen in the menu, applied on confirm.
 	reorderMode model.ReorderMode
+
+	// Description popup state: the variable's key and its reflowed comments.
+	descKey  string
+	descText string
 
 	// Session statistics: nil when disabled (e.g. read-only or session-summary=false).
 	sessionStats *SessionStats
@@ -245,8 +250,8 @@ func (a App) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		return a.handleEditingCompareKey(msg)
 	case ModeConfirmDelete:
 		return a.handleConfirmDeleteKey(msg)
-	case ModeHelp:
-		return a.handleHelpKey(msg)
+	case ModeHelp, ModeDescription:
+		return a.handleOverlayKey(msg)
 	case ModeSearching:
 		return a.handleSearchKey(msg)
 	case ModeComparing:
@@ -519,6 +524,10 @@ func (a App) handleNormalVarAction(msg tea.KeyPressMsg) (tea.Model, tea.Cmd, boo
 	case key.Matches(msg, a.keys.Peek):
 		a.varList.Peeking = !a.varList.Peeking
 		return a, nil, true
+
+	case key.Matches(msg, a.keys.Describe):
+		m, cmd := a.openDescription()
+		return m, cmd, true
 	}
 
 	return a, nil, false
@@ -585,6 +594,14 @@ func (a App) handleConfirmDeleteKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		a.mode = ModeNormal
 	}
 	return a, nil
+}
+
+// handleOverlayKey routes keys for the read-only overlays (help, description).
+func (a App) handleOverlayKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
+	if a.mode == ModeDescription {
+		return a.handleDescriptionKey(msg)
+	}
+	return a.handleHelpKey(msg)
 }
 
 func (a App) handleHelpKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
@@ -665,6 +682,10 @@ func (a App) View() tea.View {
 			content = lipgloss.JoinVertical(lipgloss.Left, panels, inputBar, statusBarContent)
 		} else {
 			content = lipgloss.JoinVertical(lipgloss.Left, panels, statusBarContent)
+		}
+
+		if a.mode == ModeDescription {
+			content = a.overlayDescription(content)
 		}
 	}
 

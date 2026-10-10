@@ -46,6 +46,16 @@ Indicators are color-coded and [fully configurable](configuration.md#colors).
 
 Toggle inline display of the original value before your edits, so you always know what changed.
 
+## Variable descriptions
+
+Press `i` on a variable to read its documentation in a popup: the comment lines directly above it (no blank line in between) followed by its inline comment. Wrapped comment lines are reflowed to the popup width; an empty `#` line starts a new paragraph, and list items (`- `, `* `) and indented lines keep their own line. Close it with `Esc` or `i`.
+
+```dotenv
+# Database host.
+# Use localhost in development.
+DB_HOST=localhost # overridden in CI
+```
+
 ## Clipboard support
 
 Yank values or full `KEY=value` lines to the clipboard using OSC 52.

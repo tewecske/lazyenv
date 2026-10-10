@@ -100,13 +100,14 @@ func modeHints(theme Theme, mode AppMode, focus Focus, diffStats string) string 
 	case ModeNormal:
 		if focus == FocusVars {
 			return fmt.Sprintf(
-				"%s %s %s %s %s %s %s %s %s %s %s %s",
+				"%s %s %s %s %s %s %s %s %s %s %s %s %s",
 				formatHint(theme, "e", "edit"),
 				formatHint(theme, "E", "rename"),
 				formatHint(theme, "a", "add"),
 				formatHint(theme, "d", "del"),
 				formatHint(theme, "y", "yank"),
 				formatHint(theme, "p", "peek"),
+				formatHint(theme, "i", "info"),
 				formatHint(theme, "/", "search"),
 				formatHint(theme, "o", "sort"),
 				formatHint(theme, "g", "group"),
@@ -143,24 +144,10 @@ func modeHints(theme Theme, mode AppMode, focus Focus, diffStats string) string 
 			theme.MutedItem.Render("│"),
 			diffStats,
 		)
-	case ModeEditing:
-		return theme.MutedItem.Render("Enter to confirm, Esc to cancel")
 	case ModeConfirmDelete, ModeConfirmMatrixDelete:
 		return theme.DuplicateWarn.Render("Delete variable? (y/n)")
-	case ModeHelp:
-		return theme.MutedItem.Render("Press Esc or ? to close help")
-	case ModeSearching:
-		return theme.MutedItem.Render("Type to search, Esc to close")
-	case ModeCreateFile:
-		return theme.MutedItem.Render("Enter to create, Esc to cancel")
-	case ModeDuplicateFile:
-		return theme.MutedItem.Render("Enter to duplicate, Esc to cancel")
 	case ModeConfirmDeleteFile:
 		return theme.DuplicateWarn.Render("Delete file from disk? (y/n)")
-	case ModeRenameFile:
-		return theme.MutedItem.Render("Enter to rename, Esc to cancel")
-	case ModeTemplateFile:
-		return theme.MutedItem.Render("Enter to create template, Esc to cancel")
 	case ModeMatrix:
 		return fmt.Sprintf(
 			"%s %s %s %s %s",
@@ -171,8 +158,23 @@ func modeHints(theme Theme, mode AppMode, focus Focus, diffStats string) string 
 			formatHint(theme, "q", "back"),
 		)
 	default:
+		if prompt, ok := mutedModeHints[mode]; ok {
+			return theme.MutedItem.Render(prompt)
+		}
 		return ""
 	}
+}
+
+// mutedModeHints holds the plain status-bar prompts per mode.
+var mutedModeHints = map[AppMode]string{
+	ModeEditing:       "Enter to confirm, Esc to cancel",
+	ModeHelp:          "Press Esc or ? to close help",
+	ModeDescription:   "Press Esc or i to close description",
+	ModeSearching:     "Type to search, Esc to close",
+	ModeCreateFile:    "Enter to create, Esc to cancel",
+	ModeDuplicateFile: "Enter to duplicate, Esc to cancel",
+	ModeRenameFile:    "Enter to rename, Esc to cancel",
+	ModeTemplateFile:  "Enter to create template, Esc to cancel",
 }
 
 func formatHint(theme Theme, key, desc string) string {
