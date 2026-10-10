@@ -24,6 +24,7 @@ func TestDefaultConfig(t *testing.T) {
 	assert.False(t, cfg.ReadOnly)
 	assert.True(t, cfg.SessionSummary)
 	assert.False(t, cfg.Group)
+	assert.Equal(t, HistoryConfig{Enabled: true, MaxEntries: 20, Git: true}, cfg.History)
 }
 
 func TestDefaultLayoutValues(t *testing.T) {
@@ -110,6 +111,29 @@ func TestLoadReadOnly(t *testing.T) {
 	cfg, warnings := Load(dir, "")
 	assert.Empty(t, warnings)
 	assert.True(t, cfg.ReadOnly)
+}
+
+func TestLoadHistory(t *testing.T) {
+	dir := t.TempDir()
+	content := []byte("[history]\nenabled = false\nmax-entries = 5\nrecord-secrets = true\ngit = false\n")
+	require.NoError(t, os.WriteFile(filepath.Join(dir, ".lazyenvrc"), content, 0644))
+
+	cfg, warnings := Load(dir, "")
+	assert.Empty(t, warnings)
+	assert.Equal(t, HistoryConfig{Enabled: false, MaxEntries: 5, RecordSecrets: true, Git: false}, cfg.History)
+}
+
+func TestLoadHistoryMaxEntriesInvalid(t *testing.T) {
+	for _, val := range []int{0, -3} {
+		dir := t.TempDir()
+		content := fmt.Appendf(nil, "[history]\nmax-entries = %d\n", val)
+		require.NoError(t, os.WriteFile(filepath.Join(dir, ".lazyenvrc"), content, 0644))
+
+		cfg, warnings := Load(dir, "")
+		assert.Len(t, warnings, 1, "val=%d", val)
+		assert.Contains(t, warnings[0], "history.max-entries")
+		assert.Equal(t, DefaultConfig(), cfg)
+	}
 }
 
 func TestLoadMalformedConfig(t *testing.T) {

@@ -10,6 +10,7 @@ import (
 	"charm.land/lipgloss/v2"
 
 	"github.com/lazynop/lazyenv/internal/config"
+	"github.com/lazynop/lazyenv/internal/history"
 	"github.com/lazynop/lazyenv/internal/model"
 )
 
@@ -37,6 +38,7 @@ const (
 	ModeReorderMenu
 	ModeReorderConfirm
 	ModeDescription
+	ModeHistory
 )
 
 // Focus represents which panel has focus.
@@ -106,6 +108,12 @@ type App struct {
 	descKey  string
 	descText string
 
+	// Value history: store is nil when disabled; git entries are cached per
+	// file path for the session.
+	history    *history.Store
+	gitHistory map[string][]history.Entry
+	histView   HistoryViewModel
+
 	// Session statistics: nil when disabled (e.g. read-only or session-summary=false).
 	sessionStats *SessionStats
 }
@@ -133,6 +141,13 @@ func NewApp(cfg config.Config, warnings []string) App {
 		stats = NewSessionStats()
 	}
 
+	var store *history.Store
+	if cfg.History.Enabled {
+		if dir, err := history.DefaultDir(); err == nil {
+			store = &history.Store{Dir: dir, MaxEntries: cfg.History.MaxEntries}
+		}
+	}
+
 	return App{
 		config:         cfg,
 		configWarnings: warnings,
@@ -150,6 +165,8 @@ func NewApp(cfg config.Config, warnings []string) App {
 		fileInput:      fi,
 		backedUpPaths:  make(map[string]bool),
 		sessionStats:   stats,
+		history:        store,
+		gitHistory:     make(map[string][]history.Entry),
 	}
 }
 
@@ -192,6 +209,7 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		a.matrixView.Width = a.width
 		a.matrixView.Height = a.height - statusBarHeight
 		a.statusBar.Width = a.width
+		a.histView.Height = a.height
 		return a, nil
 
 	case tea.BackgroundColorMsg:
@@ -234,6 +252,9 @@ func (a App) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.MouseWheelMsg:
 		return a.handleMouseWheel(msg), nil
 
+	case GitHistoryMsg:
+		return a.handleGitHistory(msg), nil
+
 	case tea.KeyPressMsg:
 		return a.handleKey(msg)
 	}
@@ -250,7 +271,7 @@ func (a App) handleKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		return a.handleEditingCompareKey(msg)
 	case ModeConfirmDelete:
 		return a.handleConfirmDeleteKey(msg)
-	case ModeHelp, ModeDescription:
+	case ModeHelp, ModeDescription, ModeHistory:
 		return a.handleOverlayKey(msg)
 	case ModeSearching:
 		return a.handleSearchKey(msg)
@@ -528,6 +549,10 @@ func (a App) handleNormalVarAction(msg tea.KeyPressMsg) (tea.Model, tea.Cmd, boo
 	case key.Matches(msg, a.keys.Describe):
 		m, cmd := a.openDescription()
 		return m, cmd, true
+
+	case key.Matches(msg, a.keys.History):
+		m, cmd := a.openHistory()
+		return m, cmd, true
 	}
 
 	return a, nil, false
@@ -598,8 +623,11 @@ func (a App) handleConfirmDeleteKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 
 // handleOverlayKey routes keys for the read-only overlays (help, description).
 func (a App) handleOverlayKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
-	if a.mode == ModeDescription {
+	switch a.mode {
+	case ModeDescription:
 		return a.handleDescriptionKey(msg)
+	case ModeHistory:
+		return a.handleHistoryKey(msg)
 	}
 	return a.handleHelpKey(msg)
 }
@@ -684,8 +712,11 @@ func (a App) View() tea.View {
 			content = lipgloss.JoinVertical(lipgloss.Left, panels, statusBarContent)
 		}
 
-		if a.mode == ModeDescription {
-			content = a.overlayDescription(content)
+		switch a.mode {
+		case ModeDescription:
+			content = a.overlay(content, a.viewDescription())
+		case ModeHistory:
+			content = a.overlay(content, a.histView.View(a.theme, a.width, a.height, a.varList.ShowSecrets))
 		}
 	}
 

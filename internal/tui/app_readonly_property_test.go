@@ -56,6 +56,7 @@ var readOnlyStartStates = []struct {
 	}},
 	{name: "help", keys: []string{"?"}, mode: ModeHelp},
 	{name: "description", keys: []string{"l", "i"}, mode: ModeDescription},
+	{name: "history", keys: []string{"l", "H"}, mode: ModeHistory},
 	{name: "searching", keys: []string{"l", "/"}, mode: ModeSearching},
 	{name: "compare-select", keys: []string{"c"}, mode: ModeCompareSelect},
 	{name: "comparing", keys: []string{"c", "j", "enter"}, mode: ModeComparing},

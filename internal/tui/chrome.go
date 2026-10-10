@@ -68,4 +68,18 @@ const (
 	// descriptionFixedRows are the description popup's non-body rows:
 	// title, two gaps and the hint.
 	descriptionFixedRows = 4
+
+	// popupMarginRows keeps a tall popup one row clear of the screen edges.
+	popupMarginRows = 2
+
+	// historyMaxWidth caps the history popup's outer width.
+	historyMaxWidth = 80
+
+	// historyFixedRows are the history popup's non-list rows: title, two
+	// gaps and the hint.
+	historyFixedRows = 4
+
+	// historyListOffsetY is the rows above the first history row: top border,
+	// padding, title and gap. Mouse hit detection subtracts it.
+	historyListOffsetY = 4
 )

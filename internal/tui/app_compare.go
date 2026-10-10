@@ -115,9 +115,11 @@ func (a App) handleCompareSave() (App, tea.Cmd) {
 	for _, f := range []*model.EnvFile{a.diffView.FileA, a.diffView.FileB} {
 		if f != nil && f.Modified {
 			warn.WriteString(a.backupIfNeeded(f.Path))
-			if err := a.saveFile(f); err != nil {
+			histWarn, err := a.saveFile(f)
+			if err != nil {
 				return a, a.flashError("Error saving " + f.Name + ": " + err.Error())
 			}
+			warn.WriteString(histWarn)
 			// Re-parse to refresh RawLines
 			refreshed, err := a.refreshFile(f)
 			if err == nil {

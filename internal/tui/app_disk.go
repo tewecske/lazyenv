@@ -17,13 +17,15 @@ import (
 // (owner-writable, world-readable), matching parser.WriteFile.
 const envFilePerm os.FileMode = 0o644
 
-// saveFile writes f to disk and records the vars just written.
-func (a App) saveFile(f *model.EnvFile) error {
+// saveFile writes f to disk and records the vars just written, plus the values
+// it replaced in the value history. A history failure is returned as warn.
+func (a App) saveFile(f *model.EnvFile) (warn string, err error) {
+	before := a.historyBaseline(f)
 	if err := parser.WriteFile(f); err != nil {
-		return err
+		return "", err
 	}
 	a.sessionStats.RecordSave(f.Path, f.Vars)
-	return nil
+	return a.recordHistory(f.Path, before, f.Vars), nil
 }
 
 // createFile writes an empty .env file at path and records it as created from

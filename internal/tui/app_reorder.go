@@ -87,9 +87,11 @@ func (a App) executeReorder() (tea.Model, tea.Cmd) {
 	f.Reorder(a.reorderMode)
 
 	warn := a.backupIfNeeded(f.Path)
-	if err := a.saveFile(f); err != nil {
+	histWarn, err := a.saveFile(f)
+	if err != nil {
 		return a, a.flashError("Error saving: " + err.Error())
 	}
+	warn += histWarn
 
 	if _, err := a.refreshFile(f); err != nil {
 		return a, a.flashError(warn + "Reordered but refresh failed: " + err.Error())

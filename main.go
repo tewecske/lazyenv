@@ -32,6 +32,7 @@ var cli struct {
 	SessionSummary *bool            `name:"session-summary" negatable:"" help:"Print a session summary on exit (default on). Use --no-session-summary to disable."`
 	Sort           *string          `short:"s" name:"sort" help:"Sort order: position or alphabetical." enum:"position,alphabetical"`
 	Group          *bool            `short:"g" name:"group" negatable:"" help:"Start with prefix grouping enabled (default off). Use --no-group to disable."`
+	History        *bool            `name:"history" negatable:"" help:"Record and show variable value history (default on). Use --no-history to disable."`
 	FileListWidth  *int             `name:"file-list-width" help:"Width of the file list panel (0=auto)."`
 	Config         string           `short:"c" name:"config" help:"Path to configuration file." type:"existingfile"`
 	CheckConfig    bool             `name:"check-config" help:"Validate configuration file and exit."`
@@ -77,6 +78,7 @@ func applyCLIOverrides(cfg *config.Config) []string {
 	if cli.Group != nil {
 		cfg.Group = *cli.Group
 	}
+	applyHistoryOverride(cfg)
 	if cli.NoGitCheck != nil {
 		cfg.NoGitCheck = *cli.NoGitCheck
 	} else if !cfg.NoGitCheck {
@@ -99,6 +101,12 @@ func applyFileListWidthOverride(cfg *config.Config) []string {
 	}
 	cfg.Layout.FileListWidth = v
 	return warns
+}
+
+func applyHistoryOverride(cfg *config.Config) {
+	if cli.History != nil {
+		cfg.History.Enabled = *cli.History
+	}
 }
 
 // applySessionSummaryOverride resolves the final SessionSummary value: CLI flag

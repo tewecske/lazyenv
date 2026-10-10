@@ -40,6 +40,7 @@ func (a App) viewHelp() string {
     Y              Copy KEY=value to clipboard
     p              Peek original value (toggle)
     i              Show variable description (its comments)
+    H              Value history (Enter restores a past value)
     N              Create new .env file
     C              Duplicate file with new name
     D              Delete file from disk

@@ -80,15 +80,24 @@ func (a App) handleDescriptionKey(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	return a, nil
 }
 
-// overlayDescription draws the description popup centered over base.
-func (a App) overlayDescription(base string) string {
-	popup := a.viewDescription()
-	x := max(0, (a.width-lipgloss.Width(popup))/2)
-	y := max(0, (a.height-lipgloss.Height(popup))/2)
+// overlay draws popup centered over base.
+func (a App) overlay(base, popup string) string {
+	x, y := a.popupOrigin(popup)
 	return lipgloss.NewCompositor(
 		lipgloss.NewLayer(base),
 		lipgloss.NewLayer(popup).X(x).Y(y).Z(1),
 	).Render()
+}
+
+// popupSize returns the rendered width and height of popup.
+func popupSize(popup string) (w, h int) {
+	return lipgloss.Width(popup), lipgloss.Height(popup)
+}
+
+// popupOrigin returns the top-left cell of popup when centered.
+func (a App) popupOrigin(popup string) (x, y int) {
+	w, h := popupSize(popup)
+	return max(0, (a.width-w)/2), max(0, (a.height-h)/2)
 }
 
 func (a App) viewDescription() string {

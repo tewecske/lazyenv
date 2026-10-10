@@ -48,6 +48,14 @@ mouse-scroll-lines = 1               # lines per mouse wheel event
 # Enable entropy-based value heuristic (flags random-looking values ≥16 chars).
 value_heuristic = true
 
+# Value history (H on a variable). Stored under $XDG_STATE_HOME/lazyenv/history,
+# else ~/.local/state (Linux), ~/Library/Application Support (macOS), %LocalAppData% (Windows).
+[history]
+enabled = true                       # --history / --no-history
+max-entries = 20                     # local entries kept per variable
+record-secrets = false               # store secret values too (plain text, 0600 file)
+git = true                           # also show values from git commits
+
 # Color overrides (hex). When using a theme, these override individual colors.
 # Leave empty or omit to use the theme or auto-detected defaults.
 [colors]

@@ -174,6 +174,10 @@ func validate(cfg Config) []string {
 		warns = append(warns, fmt.Sprintf("invalid file-list-width: %d (must be 0 or >= %d)", l.FileListWidth, FileListMinWidth))
 	}
 
+	if cfg.History.MaxEntries <= 0 {
+		warns = append(warns, fmt.Sprintf("invalid history.max-entries: %d (must be > 0)", cfg.History.MaxEntries))
+	}
+
 	if l.MouseScrollLines < 0 {
 		warns = append(warns, fmt.Sprintf("invalid mouse-scroll-lines: %d (must be >= 0)", l.MouseScrollLines))
 	}

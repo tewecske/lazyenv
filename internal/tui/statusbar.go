@@ -100,7 +100,7 @@ func modeHints(theme Theme, mode AppMode, focus Focus, diffStats string) string 
 	case ModeNormal:
 		if focus == FocusVars {
 			return fmt.Sprintf(
-				"%s %s %s %s %s %s %s %s %s %s %s %s %s",
+				"%s %s %s %s %s %s %s %s %s %s %s %s %s %s",
 				formatHint(theme, "e", "edit"),
 				formatHint(theme, "E", "rename"),
 				formatHint(theme, "a", "add"),
@@ -108,6 +108,7 @@ func modeHints(theme Theme, mode AppMode, focus Focus, diffStats string) string 
 				formatHint(theme, "y", "yank"),
 				formatHint(theme, "p", "peek"),
 				formatHint(theme, "i", "info"),
+				formatHint(theme, "H", "history"),
 				formatHint(theme, "/", "search"),
 				formatHint(theme, "o", "sort"),
 				formatHint(theme, "g", "group"),
@@ -170,6 +171,7 @@ var mutedModeHints = map[AppMode]string{
 	ModeEditing:       "Enter to confirm, Esc to cancel",
 	ModeHelp:          "Press Esc or ? to close help",
 	ModeDescription:   "Press Esc or i to close description",
+	ModeHistory:       "↑/↓ select, Enter to restore, Esc to close",
 	ModeSearching:     "Type to search, Esc to close",
 	ModeCreateFile:    "Enter to create, Esc to cancel",
 	ModeDuplicateFile: "Enter to duplicate, Esc to cancel",

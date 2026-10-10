@@ -35,6 +35,7 @@ type KeyMap struct {
 	YankLine       key.Binding
 	Peek           key.Binding
 	Describe       key.Binding
+	History        key.Binding
 	CreateFile     key.Binding
 	DuplicateFile  key.Binding
 	DeleteFile     key.Binding
@@ -169,6 +170,10 @@ func DefaultKeyMap() KeyMap {
 		Describe: key.NewBinding(
 			key.WithKeys("i"),
 			key.WithHelp("i", "description"),
+		),
+		History: key.NewBinding(
+			key.WithKeys("H"),
+			key.WithHelp("H", "value history"),
 		),
 		CreateFile: key.NewBinding(
 			key.WithKeys("N"),
