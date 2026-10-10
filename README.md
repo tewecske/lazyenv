@@ -52,6 +52,14 @@ scoop bucket add lazynop https://github.com/lazynop/scoop-bucket
 scoop install lazyenv
 ```
 
+**Nix** (NixOS, Home Manager, or any system with flakes):
+
+```
+nix profile install github:lazynop/lazyenv
+```
+
+See [Installation](docs/installation.md#nix) for the NixOS and Home Manager modules.
+
 Or download a binary from [Releases](https://github.com/lazynop/lazyenv/releases), or install from source (requires Go 1.26+):
 
 ```

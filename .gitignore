@@ -17,3 +17,5 @@ CLAUDE.md
 docs/changelog.md
 coverage.out
 .lazyenvrc
+result
+result-*
