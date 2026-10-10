@@ -1,6 +1,22 @@
 # Configuration
 
-Create a `.lazyenvrc` file (TOML) in your project root, or `~/.config/lazyenv/config.toml` for global settings. CLI flags override config file values. Run `lazyenv --show-config` to see the effective configuration.
+Create a `.lazyenvrc` file (TOML) in your project root, or a global config file for settings shared across projects. CLI flags override config file values. Run `lazyenv --show-config` to see the effective configuration.
+
+lazyenv uses the first file it finds, in this order:
+
+1. The file passed with `-c` / `--config`
+2. `.lazyenvrc` in the current directory
+3. The global config file:
+
+    | OS      | Location |
+    | ------- | -------- |
+    | Linux   | `~/.config/lazyenv/config.toml` (or `$XDG_CONFIG_HOME/lazyenv/config.toml`) |
+    | macOS   | `~/Library/Application Support/lazyenv/config.toml` |
+    | Windows | `%AppData%\lazyenv\config.toml` |
+
+4. `~/.lazyenvrc` (`%USERPROFILE%\.lazyenvrc` on Windows)
+
+Only one file is loaded; files are not merged. Run `lazyenv --check-config` to see the search paths and which file was picked.
 
 | Key            | Default         | Description                                                                                                                       |
 | -------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
