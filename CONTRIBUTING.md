@@ -32,6 +32,8 @@ just fix
 just check
 ```
 
+If you change `go.mod` or `go.sum`, run `just flake-hash` (needs Nix) to update `vendorHash` in `flake.nix`. `just install-hooks` adds a pre-push hook that refuses a push whose `vendorHash` is stale.
+
 ## License
 
 By contributing, you agree that your contributions will be licensed under the [MIT License](LICENSE).
