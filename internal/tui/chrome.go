@@ -56,4 +56,16 @@ const (
 	// matrixContentOffsetY is the number of rows above the first matrix
 	// row: header row + separator row (the matrix view has no border).
 	matrixContentOffsetY = 2
+
+	// popupChromeWidth and popupChromeHeight are a popup's border plus its
+	// padding (2 columns, 1 row) on both sides.
+	popupChromeWidth  = 6
+	popupChromeHeight = 4
+
+	// descriptionMaxWidth caps the description popup's outer width.
+	descriptionMaxWidth = 64
+
+	// descriptionFixedRows are the description popup's non-body rows:
+	// title, two gaps and the hint.
+	descriptionFixedRows = 4
 )
