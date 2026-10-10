@@ -19,6 +19,10 @@ func (a App) handleMouseClick(msg tea.MouseClickMsg) (tea.Model, tea.Cmd) {
 	case ModeHelp:
 		a.mode = ModeNormal
 		return a, nil
+	case ModeDescription:
+		return a.handleDescriptionKey(tea.KeyPressMsg{Code: tea.KeyEscape})
+	case ModeHistory:
+		return a.handleHistoryClick(msg), nil
 	case ModeEditing, ModeMatrixEditing, ModeConfirmDelete, ModeConfirmDeleteFile,
 		ModeConfirmMatrixDelete, ModeCreateFile, ModeDuplicateFile, ModeRenameFile,
 		ModeTemplateFile, ModeReorderMenu, ModeReorderConfirm, ModeConfigError:
@@ -114,9 +118,11 @@ func (a App) handleMouseWheel(msg tea.MouseWheelMsg) App {
 		a = a.scrollFileList(up)
 	case ModeMatrix, ModeMatrixEditing, ModeConfirmMatrixDelete:
 		a = a.scrollMatrix(up)
+	case ModeHistory:
+		a = a.scrollHistory(up)
 	case ModeEditing, ModeConfirmDelete, ModeConfirmDeleteFile, ModeCreateFile,
 		ModeDuplicateFile, ModeRenameFile, ModeTemplateFile, ModeReorderMenu,
-		ModeReorderConfirm, ModeHelp, ModeConfigError:
+		ModeReorderConfirm, ModeHelp, ModeDescription, ModeConfigError:
 		// Keyboard-only modes and static screens: the wheel is ignored.
 	}
 	return a

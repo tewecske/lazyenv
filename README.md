@@ -24,6 +24,7 @@ Browse, compare, edit and validate environment variables from your terminal.
 - Side-by-side diff between two files with bidirectional copy
 - Completeness matrix showing which variables exist across files
 - Change tracking: new, modified, deleted, duplicate, empty, placeholder
+- Value history from local saves and git commits, with one-key restore
 - Secret masking, gitignore check, automatic backup — all [configurable](https://lazynop.github.io/lazyenv/configuration/)
 - Clipboard support (OSC 52), search, sort, prefix-based grouping, and on-disk reorder
 - Round-trip fidelity: saves preserve comments, blank lines, quoting

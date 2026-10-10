@@ -40,6 +40,8 @@ Keybindings are context-sensitive: each screen only responds to the keys listed 
 | `y`            | Copy value to clipboard (OSC 52)             |
 | `Y`            | Copy `KEY=value` to clipboard (OSC 52)       |
 | `p`            | Toggle peek: show original value before edit |
+| `i`            | Show variable description (its comments) in a popup |
+| `H`            | Value history: browse past values, `Enter` restores one |
 | `/`            | Search variables by name or value            |
 | `c`            | Start compare: select a second file for diff |
 | `m`            | Open completeness matrix (requires 2+ files) |

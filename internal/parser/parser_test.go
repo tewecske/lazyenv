@@ -397,3 +397,13 @@ func TestMultilineSingleQuotedCompareValuesDiffer(t *testing.T) {
 	assert.NotEqual(t, efA.Vars[0].Value, efB.Vars[0].Value,
 		"values that differ only on the second line must not parse equal")
 }
+
+func TestParsedDocComment(t *testing.T) {
+	content := "# App settings\n\n# Database host.\n# Use localhost in dev.\nDB_HOST=localhost # overridden in CI\nDB_PORT=5432\n"
+	ef := ParseBytes(".env", []byte(content), config.SecretsConfig{})
+
+	require.Len(t, ef.Vars, 2)
+	assert.Equal(t, []string{"Database host.", "Use localhost in dev."}, ef.DocComment(0))
+	assert.Equal(t, "overridden in CI", ef.Vars[0].Comment)
+	assert.Nil(t, ef.DocComment(1))
+}

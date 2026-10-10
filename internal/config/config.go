@@ -21,6 +21,15 @@ type Config struct {
 	Colors  ColorConfig   `toml:"colors"`
 	Files   FileConfig    `toml:"files"`
 	Secrets SecretsConfig `toml:"secrets"`
+	History HistoryConfig `toml:"history"`
+}
+
+// HistoryConfig controls the per-variable value history.
+type HistoryConfig struct {
+	Enabled       bool `toml:"enabled"`        // record and show value history
+	MaxEntries    int  `toml:"max-entries"`    // local entries kept per key
+	RecordSecrets bool `toml:"record-secrets"` // store secret values (plain text, 0600 file)
+	Git           bool `toml:"git"`            // also read past values from git commits
 }
 
 // FileConfig holds file detection patterns.
@@ -108,6 +117,11 @@ func DefaultConfig() Config {
 		Files: FileConfig{
 			Include: []string{".env", ".env.*", "*.env"},
 			Exclude: []string{"*.bak"},
+		},
+		History: HistoryConfig{
+			Enabled:    true,
+			MaxEntries: 20,
+			Git:        true,
 		},
 	}
 }

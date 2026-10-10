@@ -3,6 +3,7 @@ package model
 import (
 	"slices"
 	"sort"
+	"strings"
 )
 
 // LineType categorizes a raw line in an env file.
@@ -150,6 +151,43 @@ func (ef *EnvFile) VarByKey(key string) *EnvVar {
 		}
 	}
 	return nil
+}
+
+// DocComment returns the comment lines directly above the variable at idx,
+// without the `#` markers. The inline comment is not included.
+func (ef *EnvFile) DocComment(idx int) []string {
+	if idx < 0 || idx >= len(ef.Vars) {
+		return nil
+	}
+	for i, l := range ef.Lines {
+		if l.Type != LineVariable || l.VarIdx != idx {
+			continue
+		}
+		start := i
+		for start > 0 && isCommentText(ef.Lines[start-1]) {
+			start--
+		}
+		if start == i {
+			return nil
+		}
+		lines := make([]string, 0, i-start)
+		for _, c := range ef.Lines[start:i] {
+			lines = append(lines, stripCommentMarker(c.Content))
+		}
+		return lines
+	}
+	return nil
+}
+
+// isCommentText reports whether l is a `#` comment, not an unparseable line.
+func isCommentText(l RawLine) bool {
+	return l.Type == LineComment && strings.HasPrefix(strings.TrimSpace(l.Content), "#")
+}
+
+// stripCommentMarker removes the leading `#` and at most one following space.
+func stripCommentMarker(line string) string {
+	s := strings.TrimPrefix(strings.TrimSpace(line), "#")
+	return strings.TrimPrefix(s, " ")
 }
 
 // ReorderMode selects the ordering used by Reorder.

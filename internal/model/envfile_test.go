@@ -340,3 +340,43 @@ func TestReorderNoVariablesIsNoOp(t *testing.T) {
 	assert.False(t, ef.Modified)
 	assert.Equal(t, "# just a comment\n", dumpLines(ef))
 }
+
+func TestDocCommentAttachedBlock(t *testing.T) {
+	ef := parseTestEnv("# Listen port.\n#   Defaults to 8080.\n#\nPORT=8080")
+
+	assert.Equal(t, []string{"Listen port.", "  Defaults to 8080.", ""}, ef.DocComment(0))
+}
+
+func TestDocCommentStopsAtBlankLine(t *testing.T) {
+	ef := parseTestEnv("# banner\n\n# host doc\nHOST=x")
+
+	assert.Equal(t, []string{"host doc"}, ef.DocComment(0))
+}
+
+func TestDocCommentStopsAtPreviousVar(t *testing.T) {
+	ef := parseTestEnv("# a doc\nA=1\nB=2")
+
+	assert.Equal(t, []string{"a doc"}, ef.DocComment(0))
+	assert.Nil(t, ef.DocComment(1))
+}
+
+func TestDocCommentExcludesInlineComment(t *testing.T) {
+	ef := parseTestEnv("A=1")
+	ef.Vars[0].Comment = "inline"
+
+	assert.Nil(t, ef.DocComment(0))
+}
+
+func TestDocCommentSkipsUnparseableLines(t *testing.T) {
+	ef := parseTestEnv("A=1")
+	ef.Lines = append([]RawLine{{Type: LineComment, Content: "not a var", VarIdx: -1}}, ef.Lines...)
+
+	assert.Nil(t, ef.DocComment(0))
+}
+
+func TestDocCommentOutOfBounds(t *testing.T) {
+	ef := parseTestEnv("A=1")
+
+	assert.Nil(t, ef.DocComment(-1))
+	assert.Nil(t, ef.DocComment(1))
+}

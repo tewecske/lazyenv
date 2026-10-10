@@ -32,6 +32,7 @@ lazyenv ./services -r
 |      | `--no-mouse`     | Disable mouse support. Useful in terminals or multiplexers with mouse conflicts.                            |
 |      | `--read-only`    | Disable all write operations. Useful for safely inspecting production files.                                 |
 |      | `--session-summary` / `--no-session-summary` | Force-enable or disable the on-exit summary of disk changes (default: enabled). `--read-only` forces it off. |
+|      | `--history` / `--no-history` | Enable or disable value history (default: enabled). |
 |      | `--file-list-width` | Width of the file list panel in characters. `0` = auto (1/4 screen, min 20).                             |
 | `-c` | `--config`       | Path to configuration file. Takes highest priority over default search paths.                               |
 |      | `--check-config` | Validate configuration file and exit. Shows search paths and any errors found.                              |
@@ -46,7 +47,7 @@ lazyenv ./services -r
 Configuration is resolved in this order, from lowest to highest priority:
 
 1. **Built-in defaults** — sensible out-of-the-box values.
-2. **Config file** — `.lazyenvrc` in the project root, or `~/.config/lazyenv/config.toml` for global settings. Project file wins over global.
+2. **Config file** — `.lazyenvrc` in the project root, or a [global config file](configuration.md) for settings shared across projects. Project file wins over global.
 3. **CLI flags** — always win. A flag passed on the command line overrides both the config file and the defaults.
 
 For example, if your config file has `recursive = false` but you run `lazyenv -r`, the recursive scan is enabled for that session.
@@ -66,6 +67,7 @@ The following flags have a corresponding config file key:
 | `--no-mouse`    | `no-mouse`     |
 | `--read-only`   | `read-only`    |
 | `--session-summary` / `--no-session-summary` | `session-summary` |
+| `--history` / `--no-history` | `history.enabled` |
 
 Flags without a config equivalent (`--check-config`, `--show-config`, `--list-themes`, `--themes`, `--version`, `--help`) are one-shot actions that print output and exit.
 

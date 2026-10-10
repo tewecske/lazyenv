@@ -1,6 +1,22 @@
 # Configuration
 
-Create a `.lazyenvrc` file (TOML) in your project root, or `~/.config/lazyenv/config.toml` for global settings. CLI flags override config file values. Run `lazyenv --show-config` to see the effective configuration.
+Create a `.lazyenvrc` file (TOML) in your project root, or a global config file for settings shared across projects. CLI flags override config file values. Run `lazyenv --show-config` to see the effective configuration.
+
+lazyenv uses the first file it finds, in this order:
+
+1. The file passed with `-c` / `--config`
+2. `.lazyenvrc` in the current directory
+3. The global config file:
+
+    | OS      | Location |
+    | ------- | -------- |
+    | Linux   | `~/.config/lazyenv/config.toml` (or `$XDG_CONFIG_HOME/lazyenv/config.toml`) |
+    | macOS   | `~/Library/Application Support/lazyenv/config.toml` |
+    | Windows | `%AppData%\lazyenv\config.toml` |
+
+4. `~/.lazyenvrc` (`%USERPROFILE%\.lazyenvrc` on Windows)
+
+Only one file is loaded; files are not merged. Run `lazyenv --check-config` to see the search paths and which file was picked.
 
 | Key            | Default         | Description                                                                                                                       |
 | -------------- | --------------- | --------------------------------------------------------------------------------------------------------------------------------- |
@@ -96,6 +112,33 @@ Keys are detected as secrets if they match any of the following (case insensitiv
 | Value entropy  | Values ≥16 chars with mixed case + digits and Shannon entropy ≥4.0 bits/char (gated by `value_heuristic`) |
 
 `safe_patterns` is checked first and overrides everything, including built-in rules and `extra_patterns`.
+
+## [history]
+
+Value history: lazyenv records the values replaced by each save, and for files committed to git also reads past values from the last 50 commits. Press `H` on a variable to browse them; `Enter` restores one.
+
+```toml
+[history]
+enabled = true
+max-entries = 20
+record-secrets = false
+git = true
+```
+
+| Key              | Default | Description |
+| ---------------- | ------- | ----------- |
+| `enabled`        | `true`  | Record and show value history. Overridden by `--history` / `--no-history`. |
+| `max-entries`    | `20`    | Local entries kept per variable. Must be greater than zero. |
+| `record-secrets` | `false` | Also record secret values. They are stored in plain text, in a file only you can read (`0600`), and masked in the popup until `Ctrl+S`. |
+| `git`            | `true`  | Also show values from git commits of the file. |
+
+Local history is stored one file per `.env` file in `lazyenv/history` under `$XDG_STATE_HOME` if set, otherwise:
+
+| OS      | Location |
+| ------- | -------- |
+| Linux   | `~/.local/state/lazyenv/history` |
+| macOS   | `~/Library/Application Support/lazyenv/history` |
+| Windows | `%LocalAppData%\lazyenv\history` |
 
 ## [colors]
 

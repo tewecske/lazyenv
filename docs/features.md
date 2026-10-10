@@ -46,6 +46,27 @@ Indicators are color-coded and [fully configurable](configuration.md#colors).
 
 Toggle inline display of the original value before your edits, so you always know what changed.
 
+## Variable descriptions
+
+Press `i` on a variable to read its documentation in a popup: the comment lines directly above it (no blank line in between) followed by its inline comment. Wrapped comment lines are reflowed to the popup width; an empty `#` line starts a new paragraph, and list items (`- `, `* `) and indented lines keep their own line. Close it with `Esc` or `i`.
+
+```dotenv
+# Database host.
+# Use localhost in development.
+DB_HOST=localhost # overridden in CI
+```
+
+## Value history
+
+Press `H` on a variable to see its previous values, newest first, and press `Enter` to restore one. The restore is a normal edit: the variable is marked modified until you save.
+
+Values come from two sources:
+
+- **Local**: on every save, lazyenv records the values it replaced (changed or deleted keys). This also covers gitignored `.env` files.
+- **Git**: for files committed to git, the values from the last 50 commits, with commit hash and author.
+
+Secret values are not recorded unless `record-secrets` is enabled, and are masked in the popup until `Ctrl+S`. See [`[history]`](configuration.md#history) to configure or disable it.
+
 ## Clipboard support
 
 Yank values or full `KEY=value` lines to the clipboard using OSC 52.
