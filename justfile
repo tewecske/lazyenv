@@ -106,3 +106,11 @@ try-override: (try-config "theme-with-override")
 try-wide: (try-config "wide-layout")
 try-monorepo: (try-config "monorepo")
 try-full: (try-config "full")
+
+# Recompute flake.nix's vendorHash after changing go.mod or go.sum (needs nix)
+flake-hash:
+    ./scripts/flake-hash.sh
+
+# Install the git hooks (pre-push checks flake.nix's vendorHash)
+install-hooks:
+    ./scripts/flake-hash.sh --install-hook

@@ -27,7 +27,8 @@
           pname = "lazyenv";
           version = "${baseVersion}-unstable-${date}";
           src = lib.cleanSource ./.;
-          # Update when go.sum changes (nix build prints the new hash).
+          # Run `just flake-hash` after changing go.mod or go.sum; the pre-push hook checks this stamp.
+          # vendorHash inputs (go.mod, go.sum): d0ba8daf219ad3aed13946f298bcd73cf344037d155fe297c651f37e48bd1d42
           vendorHash = "sha256-7G/7YVJ5JomnMKQNki90/DK/zVWvAW0PBEWGlmLl+AE=";
 
           subPackages = [ "." ];

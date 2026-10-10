@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+#
+# Refuses a push whose flake.nix vendorHash is stale for its go.mod/go.sum.
+# Install with `just install-hooks`; skip once with `git push --no-verify`.
+#
+# stdin carries one line per pushed ref:  <local ref> <local sha> <remote ref> <remote sha>
+
+set -euo pipefail
+
+REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
+readonly REPO_ROOT
+readonly ZERO="0000000000000000000000000000000000000000"
+
+while read -r _local_ref local_sha _remote_ref _remote_sha; do
+  # A branch deletion has nothing to check.
+  [ "$local_sha" = "$ZERO" ] && continue
+  "$REPO_ROOT/scripts/flake-hash.sh" --check "$local_sha"
+done
+
+exit 0
